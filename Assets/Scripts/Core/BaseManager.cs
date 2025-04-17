@@ -37,5 +37,9 @@ namespace CFramework.Core
             }
 #endif
         }
+
+        public abstract void Initialize();
+
+        public abstract void Shutdown();
     }
 }
