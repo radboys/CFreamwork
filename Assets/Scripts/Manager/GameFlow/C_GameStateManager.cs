@@ -3,10 +3,10 @@ using CFramework.Core;
 
 namespace CFramework.Managers
 {
-    public class GameStateManager : BaseManager<GameStateManager>
+    public class C_GameStateManager : BaseManager<C_GameStateManager>
     {
         // 私有构造函数，确保通过 BaseManager<Create>() 进行懒加载
-        private GameStateManager() { }
+        private C_GameStateManager() { }
         public override void Initialize()
         {
             Debug.Log("[GameStateManager] Initializing...");

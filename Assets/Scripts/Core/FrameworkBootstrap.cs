@@ -23,6 +23,9 @@ namespace CFramework.Core
         {
             Debug.Log("[FrameworkBootstrap] Initializing managers...");
 
+            // 创建 UpdateDispatcher
+            new GameObject("UpdateDispatcher").AddComponent<UpdateDispatcher>();
+
             // —— 框架层 ——
             // 1. 配置管理：先加载全局配置
             //ConfigManager.Instance.Load(configPath);
@@ -33,30 +36,30 @@ namespace CFramework.Core
             //LogManager.Instance.Initialize();
 
             // 3. 事件总线：模块通信基础
-            EventCenter.Instance.Initialize();
+            C_EventManager.Instance.Initialize();
 
             // —— 系统层 ——
-            // 4. 定时器：冷却／延迟调用等
-            //TimerManager.Instance.Initialize();
+            // 4. 资源管理器：管理资源加载
+            C_ResourceManager.Instance.Initialize();
 
             // 5. 输入系统：先于其他依赖输入的模块
-            //InputManager.Instance.Initialize();
+            C_InputManager.Instance.Initialize();
 
             // 6. 对象池：许多模块可能会从池里取物体
-            //ObjectPoolManager.Instance.Initialize();
+            C_ObjectPoolManager.Instance.Initialize();
 
             // 7. 场景加载：准备好切场景逻辑
-            //SceneLoader.Instance.Initialize();
+            C_SceneManager.Instance.Initialize();
 
             // —— 游戏层 ——
             // 8. 游戏状态机：在框架与系统都就绪后才启动
-            GameStateManager.Instance.Initialize();
+            C_GameStateManager.Instance.Initialize();
 
             // 9. UI 逻辑：依赖状态机与资源
-            //UILogicManager.Instance.Initialize();
+            C_UIManager.Instance.Initialize();
 
             // 10. 音频管理：可以在 UI、状态机后统一播放 BGM
-            //AudioManager.Instance.Initialize();
+            C_AudioManager.Instance.Initialize();
 
             // 11. 存档管理：最后注册，保证所有数据模块都已准备好
             //SaveLoadManager.Instance.Initialize();

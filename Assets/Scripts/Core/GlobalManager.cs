@@ -16,6 +16,11 @@ namespace CFramework.Core
         /// <summary>应用即将退出时触发</summary>
         public static event Action OnApplicationQuitEvent;
 
+        /// <summary>
+        /// 启动模式：调试模式 = true, 正常模式 = false
+        /// </summary>
+        public bool IsDebugMode = false;
+
         private void Awake()
         {
             // —— 单例保护 ——
@@ -29,14 +34,41 @@ namespace CFramework.Core
             DontDestroyOnLoad(gameObject);
 
             // —— 启动流程 ——
-            InitializeFramework();
+            if (IsDebugMode)
+            {
+                LaunchDebugMode();
+            }
+            else
+            {
+                LaunchNormalMode();
+            }
         }
 
         private void InitializeFramework()
         {
             Debug.Log("[GameEntry] Initializing Framework...");
+
             FrameworkBootstrap.Initialize();
+
             Debug.Log("[GameEntry] Framework Initialized.");
+        }
+
+        // 新增方法：区分正常模式和调试模式启动流程
+        private void LaunchNormalMode()
+        {
+            Debug.Log("[GameEntry] Starting Normal Mode...");
+            // TODO: 从正规初始场景开始加载
+            // TODO: 配置必要的游戏内容
+            // TODO: 播放Logo等开屏动画
+            InitializeFramework();
+        }
+
+        private void LaunchDebugMode()
+        {
+            Debug.Log("[GameEntry] Starting Debug Mode...");
+            // TODO: 可选配置
+            // TODO: 跳过Logo等开屏动画，直接进入游戏逻辑
+            InitializeFramework();
         }
 
         private void OnApplicationQuit()

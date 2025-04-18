@@ -1,13 +1,21 @@
 using UnityEngine;
-
+using CFramework.Input;
+using UnityEngine.InputSystem;
 public class Test : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private C_InputActionAsset input;
+
+    private void Awake()
     {
-        ResourceLoader.Instance.LoadResourceAsync<PhysicsMaterial>("Smooth", (obj) =>
+        input = new C_InputActionAsset();
+    }
+
+    void Update()
+    {
+        if (Mouse.current.leftButton.isPressed)
         {
-            Debug.Log($"LoadResourceAsync: {obj.name}");
-        });
+            Vector2 pos = Mouse.current.position.ReadValue();
+            Debug.Log("持续获取鼠标位置：" + pos);
+        }
     }
 }

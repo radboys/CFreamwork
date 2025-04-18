@@ -10,10 +10,10 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 #endif
 
-public class ResourceLoader : BaseManager<ResourceLoader>
+public class C_ResourceManager : BaseManager<C_ResourceManager>
 {
     // 私有构造，确保通过 BaseManager<Create>() 进行懒加载
-    private ResourceLoader() { }
+    private C_ResourceManager() { }
 
     public override void Initialize()
     {
@@ -40,15 +40,7 @@ public class ResourceLoader : BaseManager<ResourceLoader>
                 return;
             }
 
-            // 如果是 GameObject，直接返回实例化后的物体
-            if (typeof(T) == typeof(GameObject))
-            {
-                onComplete?.Invoke(Object.Instantiate(request.asset as GameObject) as T);
-            }
-            else
-            {
-                onComplete?.Invoke(request.asset as T);
-            }
+            onComplete?.Invoke(request.asset as T);
         };
     }
 
@@ -61,15 +53,7 @@ public class ResourceLoader : BaseManager<ResourceLoader>
         {
             if (operation.Status == AsyncOperationStatus.Succeeded)
             {
-                // 如果是 GameObject，直接返回实例化后的物体
-                if (typeof(T) == typeof(GameObject))
-                {
-                    onComplete?.Invoke(Object.Instantiate(operation.Result as GameObject) as T);
-                }
-                else
-                {
-                    onComplete?.Invoke(operation.Result as T);
-                }
+                onComplete?.Invoke(operation.Result as T);
             }
             else
             {

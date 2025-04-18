@@ -48,14 +48,14 @@ namespace CFramework.Managers
     /// <summary>
     /// 事件中心：提供基于枚举的类型化订阅/发布机制
     /// </summary>
-    public class EventCenter : BaseManager<EventCenter>
+    public class C_EventManager : BaseManager<C_EventManager>
     {
         // 事件字典：事件类型 → 事件订阅信息
         private readonly Dictionary<E_EventType, EventInfoBase> eventDic =
             new Dictionary<E_EventType, EventInfoBase>();
 
         // 私有构造，确保通过 BaseManager<Create>() 进行懒加载
-        private EventCenter() { }
+        private C_EventManager() { }
 
         public override void Initialize()
         {

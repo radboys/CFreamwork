@@ -1,6 +1,34 @@
 {
-    "name": "InputSystem_Actions",
+    "name": "C_InputActionAsset",
     "maps": [
+        {
+            "name": "Gameplay",
+            "id": "ced1affb-4b45-49f9-8021-a6eda3f196e8",
+            "actions": [
+                {
+                    "name": "Touch",
+                    "type": "Button",
+                    "id": "2a672a83-1509-49d0-930b-cd7e14fb5ab1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "fe6d8d2b-b6f3-431b-9f30-a5e87c129040",
+                    "path": "<Mouse>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Touch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
         {
             "name": "Player",
             "id": "df70fa95-8a34-4494-b137-73ab6b9c7d37",
