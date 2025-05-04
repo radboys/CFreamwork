@@ -21,22 +21,22 @@ namespace CFramework.Managers
 
         public override void Initialize()
         {
-            Debug.Log("[ObjectPoolManager] Initializing...");
+            Debug.Log("<color=green>[C_ObjectPoolManager]</color> Initializing...");
             poolDictionary.Clear();
             CreatePoolRoot();
-            Debug.Log("[ObjectPoolManager] Initialized.");
+            Debug.Log("<color=green>[C_ObjectPoolManager]</color> Initialized.");
         }
 
         public override void Shutdown()
         {
-            Debug.Log("[ObjectPoolManager] Shutting down...");
+            Debug.Log("<color=green>[C_ObjectPoolManager]</color> Shutting down...");
             ClearAllPools();
             if (poolRoot != null)
             {
                 UnityEngine.Object.Destroy(poolRoot);
                 poolRoot = null;
             }
-            Debug.Log("[ObjectPoolManager] Shutdown.");
+            Debug.Log("<color=green>[C_ObjectPoolManager]</color> Shutdown.");
         }
 
         private void CreatePoolRoot()
@@ -61,25 +61,25 @@ namespace CFramework.Managers
         {
             if (string.IsNullOrEmpty(poolName))
             {
-                Debug.LogError("[ObjectPoolManager] Pool name cannot be null or empty.");
+                Debug.LogError("<color=green>[C_ObjectPoolManager]</color> Pool name cannot be null or empty.");
                 return;
             }
 
             if (prefab == null)
             {
-                Debug.LogError("[ObjectPoolManager] Prefab cannot be null.");
+                Debug.LogError("<color=green>[C_ObjectPoolManager]</color> Prefab cannot be null.");
                 return;
             }
 
             if (maxSize <= 0 || maxSize > MAX_POOL_SIZE)
             {
-                Debug.LogWarning($"[ObjectPoolManager] Invalid max size {maxSize}, using default value {DEFAULT_POOL_SIZE}");
+                Debug.LogWarning($"<color=green>[C_ObjectPoolManager]</color> Invalid max size {maxSize}, using default value {DEFAULT_POOL_SIZE}");
                 maxSize = DEFAULT_POOL_SIZE;
             }
 
             if (poolDictionary.ContainsKey(poolName))
             {
-                Debug.LogWarning($"[ObjectPoolManager] Pool {poolName} already exists.");
+                Debug.LogWarning($"<color=green>[C_ObjectPoolManager]</color> Pool {poolName} already exists.");
                 return;
             }
 
@@ -97,7 +97,7 @@ namespace CFramework.Managers
         {
             if (string.IsNullOrEmpty(prefabName))
             {
-                Debug.LogError("[ObjectPoolManager] Prefab name cannot be null or empty.");
+                Debug.LogError("<color=green>[C_ObjectPoolManager]</color> Prefab name cannot be null or empty.");
                 callback?.Invoke(null);
                 return;
             }
@@ -115,7 +115,7 @@ namespace CFramework.Managers
             {
                 if (prefab == null)
                 {
-                    Debug.LogError($"[ObjectPoolManager] Failed to load prefab: {prefabName}");
+                    Debug.LogError($"<color=green>[C_ObjectPoolManager]</color> Failed to load prefab: {prefabName}");
                     callback?.Invoke(null);
                     return;
                 }
@@ -137,13 +137,13 @@ namespace CFramework.Managers
         {
             if (string.IsNullOrEmpty(poolName))
             {
-                Debug.LogError("[ObjectPoolManager] Pool name cannot be null or empty.");
+                Debug.LogError("<color=green>[C_ObjectPoolManager]</color> Pool name cannot be null or empty.");
                 return;
             }
 
             if (obj == null)
             {
-                Debug.LogError("[ObjectPoolManager] Object cannot be null.");
+                Debug.LogError("<color=green>[C_ObjectPoolManager]</color> Object cannot be null.");
                 return;
             }
 
@@ -157,7 +157,7 @@ namespace CFramework.Managers
             {
                 if (prefab == null)
                 {
-                    Debug.LogError($"[ObjectPoolManager] Failed to load prefab: {obj.name}");
+                    Debug.LogError($"<color=green>[C_ObjectPoolManager]</color> Failed to load prefab: {obj.name}");
                     return;
                 }
 

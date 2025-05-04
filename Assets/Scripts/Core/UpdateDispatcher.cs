@@ -20,6 +20,8 @@ namespace CFramework.Core
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
+            Debug.Log("<color=orange>[UpdateDispatcher]</color> Created.");
+
             foreach (UpdatePhase phase in Enum.GetValues(typeof(UpdatePhase)))
             {
                 updatables[phase] = new List<IUpdatable>();
@@ -53,6 +55,11 @@ namespace CFramework.Core
                     list.ForEach(updatable => updatable.OnUpdate());
                 }
             }
+        }
+
+        private void OnDestroy()
+        {
+            Debug.Log("<color=orange>[UpdateDispatcher]</color> Destroyed.");
         }
     }
 }

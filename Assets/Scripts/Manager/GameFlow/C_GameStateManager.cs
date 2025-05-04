@@ -9,16 +9,14 @@ namespace CFramework.Managers
         private C_GameStateManager() { }
         public override void Initialize()
         {
-            Debug.Log("[GameStateManager] Initializing...");
-
-            Debug.Log("[GameStateManager] Initialized.");
+            Debug.Log("<color=green>[GameStateManager]</color> Initializing...");
+            Debug.Log("<color=green>[GameStateManager]</color> Initialized.");
         }
 
         public override void Shutdown()
         {
-            Debug.Log("[GameStateManager] Shutting down...");
-
-            Debug.Log("[GameStateManager] Shutdown.");
+            Debug.Log("<color=green>[GameStateManager]</color> Shutting down...");
+            Debug.Log("<color=green>[GameStateManager]</color> Shutdown.");
         }
     }
 }

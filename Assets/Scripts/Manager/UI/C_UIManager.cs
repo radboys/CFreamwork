@@ -1,4 +1,3 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using CFramework.Core;
@@ -7,6 +6,13 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// UI层级枚举
+/// - Bottom: 底层UI，通常用于背景或常驻UI
+/// - Middle: 中层UI，用于主要交互界面
+/// - Top: 顶层UI，用于弹窗或提示
+/// - System: 系统层UI，用于系统级提示或全局UI
+/// </summary>
 public enum E_UI_Layer
 {
     Bottom,
@@ -14,71 +20,131 @@ public enum E_UI_Layer
     Top,
     System,
 }
-/// <summary>
-/// UI层级
-/// </summary>
-
 
 /// <summary>
 /// UI管理器
-/// 1.管理所有显示的面板
-/// 2.提供给外部 显示和隐藏等等接口
+/// 功能：
+/// 1. 管理所有显示的面板（加载、显示、隐藏、销毁）
+/// 2. 提供外部接口用于操作UI面板
+/// 3. 支持分层管理UI（Bottom/Middle/Top/System）
 /// </summary>
 public class C_UIManager : BaseManager<C_UIManager>
 {
+    // 存储所有已加载的面板，键为面板名称，值为面板对象
     private Dictionary<string, BasePanel> UIPanels = new();
 
-    private Transform bottomLayer;
-    private Transform middleLayer;
-    private Transform topLayer;
-    private Transform SystemLayer;
+    // UI层级父对象
+    private Transform bottomLayer;    // 底层UI父对象
+    private Transform middleLayer;    // 中层UI父对象
+    private Transform topLayer;       // 顶层UI父对象
+    private Transform SystemLayer;    // 系统层UI父对象
+
+    // 过渡遮罩对象，用于场景切换或其他过渡效果
     public GameObject TransitionCover;
 
-    //记录我们UI的Canvas父对象 方便以后外部可能会使用它
+    // Canvas对象，用于管理UI的渲染层级
     private RectTransform canvas;
 
+    /// <summary>
+    /// 初始化方法（继承自BaseManager）
+    /// </summary>
     public override void Initialize()
     {
-        Debug.Log("[C_UIManager] Initializing...");
-
-        Debug.Log("[C_UIManager] Initialized.");
+        Debug.Log("<color=green>[C_UIManager]</color> Initializing...");
+        Debug.Log("<color=green>[C_UIManager]</color> Initialized.");
     }
 
+    /// <summary>
+    /// 关闭方法（继承自BaseManager）
+    /// </summary>
     public override void Shutdown()
     {
-        Debug.Log("[C_UIManager] Shutting down...");
-
-        Debug.Log("[C_UIManager] Shutdown.");
+        Debug.Log("<color=green>[C_UIManager]</color> Shutting down...");
+        Debug.Log("<color=green>[C_UIManager]</color> Shutdown.");
     }
 
+    /// <summary>
+    /// 构造函数（私有，确保单例模式）
+    /// 初始化Canvas和EventSystem，并加载UI层级
+    /// </summary>
     private C_UIManager()
     {
-        //创建Canvas 让其过场景的时候 不被移除
+        // 异步加载Canvas
         C_ResourceManager.Instance.LoadResourceAsync<GameObject>("UI/Canvas", (obj) =>
         {
-            canvas = obj.transform as RectTransform;
-            GameObject.DontDestroyOnLoad(obj);
+            if (obj == null)
+            {
+                Debug.LogError("[C_UIManager] Failed to load Canvas.");
+                return;
+            }
+
+            // 实例化Canvas
+            GameObject canvasObj = GameObject.Instantiate(obj);
+            if (canvasObj == null)
+            {
+                Debug.LogError("[C_UIManager] Failed to instantiate Canvas.");
+                return;
+            }
+
+            // 将Canvas转换为RectTransform并保存
+            canvas = canvasObj.transform as RectTransform;
+            if (canvas == null)
+            {
+                Debug.LogError("[C_UIManager] Canvas transform is not a RectTransform.");
+                return;
+            }
+
+            // 确保Canvas在场景切换时不被销毁
+            GameObject.DontDestroyOnLoad(canvasObj);
+
+            // 加载各层级父对象
+            bottomLayer = canvas.Find("Bottom");
+            middleLayer = canvas.Find("Middle");
+            topLayer = canvas.Find("Top");
+            SystemLayer = canvas.Find("System");
+
+            // 检查层级是否加载成功
+            if (bottomLayer == null || middleLayer == null || topLayer == null || SystemLayer == null)
+            {
+                Debug.LogError("[C_UIManager] One or more UI layers are missing.");
+                return;
+            }
+
+            // 加载过渡遮罩对象（可选）
+            TransitionCover = canvas.Find("TransitionCover")?.gameObject;
+            if (TransitionCover == null)
+            {
+                Debug.LogWarning("<color=green>[C_UIManager]</color> TransitionCover not found.");
+            }
         });
 
-        //找到各层
-        bottomLayer = canvas.Find("Bot");
-        middleLayer = canvas.Find("Mid");
-        topLayer = canvas.Find("Top");
-        SystemLayer = canvas.Find("System");
-        TransitionCover = canvas.Find("TransitionCover").gameObject;
-
-        //创建EventSystem 让其过场景的时候 不被移除
+        // 异步加载EventSystem
         C_ResourceManager.Instance.LoadResourceAsync<GameObject>("UI/EventSystem", (obj) =>
         {
-            GameObject.DontDestroyOnLoad(obj);
+            if (obj == null)
+            {
+                Debug.LogError("<color=green>[C_UIManager]</color> Failed to load EventSystem.");
+                return;
+            }
+
+            // 实例化EventSystem
+            GameObject eventSystemObj = GameObject.Instantiate(obj);
+            if (eventSystemObj == null)
+            {
+                Debug.LogError("<color=green>[C_UIManager]</color> Failed to instantiate EventSystem.");
+                return;
+            }
+
+            // 确保EventSystem在场景切换时不被销毁
+            GameObject.DontDestroyOnLoad(eventSystemObj);
         });
     }
 
     /// <summary>
-    /// 通过层级枚举 得到对应层级的父对象
+    /// 根据层级枚举获取对应的父对象
     /// </summary>
-    /// <param name="layer"></param>
-    /// <returns></returns>
+    /// <param name="layer">UI层级枚举</param>
+    /// <returns>对应层级的父对象Transform</returns>
     public Transform GetLayerFather(E_UI_Layer layer)
     {
         switch (layer)
@@ -96,97 +162,130 @@ public class C_UIManager : BaseManager<C_UIManager>
     }
 
     /// <summary>
-    /// 显示面板
+    /// 显示指定名称的面板
     /// </summary>
-    /// <typeparam name="T">面板脚本类型</typeparam>
-    /// <param name="panelName">面板名</param>
-    /// <param name="layer">显示在哪一层</param>
-    /// <param name="callBack">当面板预设体创建成功后 你想做的事</param>
+    /// <typeparam name="T">面板脚本类型（必须继承自BasePanel）</typeparam>
+    /// <param name="panelName">面板名称</param>
+    /// <param name="layer">面板显示的层级（默认为Middle）</param>
+    /// <param name="callBack">面板加载完成后的回调函数</param>
     public void ShowPanel<T>(string panelName, E_UI_Layer layer = E_UI_Layer.Middle, UnityAction<T> callBack = null) where T : BasePanel
     {
-        if (UIPanels.ContainsKey(panelName))
+        if (string.IsNullOrEmpty(panelName))
         {
-            UIPanels[panelName].ShowMe();
-            // 处理面板创建完成后的逻辑
-            if (callBack != null)
-                callBack(UIPanels[panelName] as T);
-            //避免面板重复加载 如果存在该面板 即直接显示 调用回调函数后  直接return 不再处理后面的异步加载逻辑
+            Debug.LogError("<color=green>[C_UIManager]</color> Panel name is null or empty.");
             return;
         }
 
+        // 检查面板是否已加载
+        if (UIPanels.TryGetValue(panelName, out BasePanel panel))
+        {
+            panel.ShowMe();
+            callBack?.Invoke(panel as T);
+            return;
+        }
+
+        // 异步加载面板资源
         C_ResourceManager.Instance.LoadResourceAsync<GameObject>("UI/Panels/" + panelName, (obj) =>
         {
-            //把他作为 Canvas的子对象
-            //并且 要设置它的相对位置
-            //找到父对象 你到底显示在哪一层
-            Transform father = bottomLayer;
-            switch (layer)
+            if (obj == null)
             {
-                case E_UI_Layer.Middle:
-                    father = middleLayer;
-                    break;
-                case E_UI_Layer.Top:
-                    father = topLayer;
-                    break;
-                case E_UI_Layer.System:
-                    father = SystemLayer;
-                    break;
+                Debug.LogError($"<color=green>[C_UIManager]</color> Failed to load panel: {panelName}");
+                return;
             }
-            //设置父对象  设置相对位置和大小
-            obj.transform.SetParent(father);
 
+            // 获取对应层级的父对象
+            Transform father = GetLayerFather(layer);
+            if (father == null)
+            {
+                Debug.LogError($"<color=green>[C_UIManager]</color> Layer {layer} not found.");
+                return;
+            }
+
+            // 设置面板的父对象和位置
+            obj.transform.SetParent(father);
             obj.transform.localPosition = Vector3.zero;
             obj.transform.localScale = Vector3.one;
 
-            (obj.transform as RectTransform).offsetMax = Vector2.zero;
-            (obj.transform as RectTransform).offsetMin = Vector2.zero;
+            // 如果是RectTransform，设置其锚点为全屏
+            RectTransform rectTransform = obj.transform as RectTransform;
+            if (rectTransform != null)
+            {
+                rectTransform.offsetMax = Vector2.zero;
+                rectTransform.offsetMin = Vector2.zero;
+            }
 
-            //得到预设体身上的面板脚本
-            T panel = obj.GetComponent<T>();
-            // 处理面板创建完成后的逻辑
-            if (callBack != null)
-                callBack(panel);
+            // 获取面板脚本组件
+            T panelComponent = obj.GetComponent<T>();
+            if (panelComponent == null)
+            {
+                Debug.LogError($"<color=green>[C_UIManager]</color> Panel {panelName} does not have component of type {typeof(T)}.");
+                return;
+            }
 
-            panel.ShowMe();
-
-            //把面板存起来
-            UIPanels.Add(panelName, panel);
+            // 调用回调函数并显示面板
+            callBack?.Invoke(panelComponent);
+            panelComponent.ShowMe();
+            UIPanels.Add(panelName, panelComponent);
         });
     }
 
     /// <summary>
-    /// 隐藏面板
+    /// 隐藏指定名称的面板
     /// </summary>
-    /// <param name="panelName"></param>
+    /// <param name="panelName">面板名称</param>
     public void HidePanel(string panelName)
     {
-        if (UIPanels.ContainsKey(panelName))
+        if (string.IsNullOrEmpty(panelName))
         {
-            UIPanels[panelName].HideMe();
+            Debug.LogError("<color=green>[C_UIManager]</color> Panel name is null or empty.");
+            return;
+        }
+
+        if (UIPanels.TryGetValue(panelName, out BasePanel panel))
+        {
+            panel.HideMe();
+        }
+        else
+        {
+            Debug.LogWarning($"<color=green>[C_UIManager]</color> Panel {panelName} not found.");
         }
     }
 
     /// <summary>
-    /// 得到某一个已经显示的面板 方便外部使用
+    /// 获取指定名称的面板
     /// </summary>
+    /// <typeparam name="T">面板脚本类型（必须继承自BasePanel）</typeparam>
+    /// <param name="name">面板名称</param>
+    /// <returns>面板对象，如果未找到则返回null</returns>
     public T GetPanel<T>(string name) where T : BasePanel
     {
-        if (UIPanels.ContainsKey(name))
-            return UIPanels[name] as T;
+        if (UIPanels.TryGetValue(name, out BasePanel panel))
+        {
+            return panel as T;
+        }
         return null;
     }
 
     /// <summary>
-    /// 给控件添加自定义事件监听
+    /// 为UI控件添加自定义事件监听
     /// </summary>
     /// <param name="control">控件对象</param>
-    /// <param name="type">事件类型</param>
-    /// <param name="callBack">事件的响应函数</param>
+    /// <param name="type">事件类型（如点击、拖拽等）</param>
+    /// <param name="callBack">事件回调函数</param>
     public static void AddCustomEventListener(UIBehaviour control, EventTriggerType type, UnityAction<BaseEventData> callBack)
     {
+        if (control == null)
+        {
+            Debug.LogError("<color=green>[C_UIManager]</color> Control is null.");
+            return;
+        }
+
+        // 获取或添加EventTrigger组件
         EventTrigger trigger = control.GetComponent<EventTrigger>();
         if (trigger == null)
+        {
             trigger = control.gameObject.AddComponent<EventTrigger>();
+        }
 
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = type;
@@ -201,7 +300,10 @@ public class C_UIManager : BaseManager<C_UIManager>
         {
             foreach (var kvp in UIPanels)
             {
-                GameObject.Destroy(UIPanels[kvp.Key].gameObject);
+                if (kvp.Value != null && kvp.Value.gameObject != null)
+                {
+                    GameObject.Destroy(UIPanels[kvp.Key].gameObject);
+                }
             }
             UIPanels.Clear();
         }

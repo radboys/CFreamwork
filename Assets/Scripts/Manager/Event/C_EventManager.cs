@@ -59,16 +59,16 @@ namespace CFramework.Managers
 
         public override void Initialize()
         {
-            Debug.Log("[EventCenter] Initializing...");
+            Debug.Log("<color=green>[C_EventManager]</color> Initializing...");
             eventDic.Clear();
-            Debug.Log("[EventCenter] Initialized.");
+            Debug.Log("<color=green>[C_EventManager]</color> Initialized.");
         }
 
         public override void Shutdown()
         {
-            Debug.Log("[EventCenter] Shutting down...");
+            Debug.Log("<color=green>[C_EventManager]</color> Shutting down...");
             eventDic.Clear();
-            Debug.Log("[EventCenter] Shutdown.");
+            Debug.Log("<color=green>[C_EventManager]</color> Shutdown.");
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace CFramework.Managers
                 var info = baseInfo as EventInfo<T>;
                 if (info == null)
                 {
-                    Debug.LogError($"[EventCenter] Event type mismatch for {eventType}");
+                    Debug.LogError($"[C_EventManager] Event type mismatch for {eventType}");
                     return;
                 }
                 info.actions += listener;
@@ -102,7 +102,7 @@ namespace CFramework.Managers
                 var info = baseInfo as EventInfo;
                 if (info == null)
                 {
-                    Debug.LogError($"[EventCenter] Event type mismatch for {eventType}");
+                    Debug.LogError($"[C_EventManager] Event type mismatch for {eventType}");
                     return;
                 }
                 info.actions += listener;
@@ -155,7 +155,7 @@ namespace CFramework.Managers
             }
             else
             {
-                Debug.LogError($"[EventCenter] Event doesn't exist");
+                Debug.LogError($"[C_EventManager] Event doesn't exist");
             }
         }
 
@@ -171,7 +171,7 @@ namespace CFramework.Managers
             }
             else
             {
-                Debug.LogError($"[EventCenter] Event doesn't exist");
+                Debug.LogError($"[C_EventManager] Event doesn't exist");
             }
         }
 

@@ -70,11 +70,12 @@ public class C_SceneManager : BaseManager<C_SceneManager>
 
     public override void Initialize()
     {
-        Debug.Log("[GameSceneManager] Initialized.");
+        Debug.Log("<color=green>[C_SceneManager]</color> Initializing...");
+        Debug.Log("<color=green>[C_SceneManager]</color> Initialized.");
     }
 
     public override void Shutdown()
     {
-        Debug.Log("[GameSceneManager] Shutdown.");
+        Debug.Log("<color=green>[C_SceneManager]</color> Shutdown.");
     }
 }

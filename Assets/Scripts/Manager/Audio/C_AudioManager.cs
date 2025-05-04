@@ -33,38 +33,45 @@ namespace CFramework.Managers
 
         public override void Initialize()
         {
+            Debug.Log("<color=green>[C_AudioManager]</color> Initializing...");
             C_ResourceManager.Instance.LoadResourceAsync<AudioConfig>("AudioConfig", (config) =>
             {
                 audioConfig = config;
+                if (audioConfig == null)
+                {
+                    Debug.LogError("[C_AudioManager] Failed to load AudioConfig.");
+                    return;
+                }
+
+                // 创建持久化 GameObject 和协程 Runner
+                audioRoot = new GameObject("C_MusicManager_Audio");
+                Object.DontDestroyOnLoad(audioRoot);
+
+                runner = audioRoot.AddComponent<AudioRunner>();
+
+                // 添加并配置 AudioSource
+                musicSource = audioRoot.AddComponent<AudioSource>();
+                musicSource.loop = true;
+                sfxSource = audioRoot.AddComponent<AudioSource>();
+
+                // 构建音频字典
+                musicDict = new Dictionary<string, AudioClip>();
+                foreach (var info in audioConfig.musicInfos)
+                {
+                    if (info.clip != null && !musicDict.ContainsKey(info.key))
+                        musicDict.Add(info.key, info.clip);
+                }
+
+                sfxDict = new Dictionary<string, AudioClip>();
+                foreach (var info in audioConfig.sfxInfos)
+                {
+                    if (info.clip != null && !sfxDict.ContainsKey(info.key))
+                        sfxDict.Add(info.key, info.clip);
+                }
+
+                Debug.Log($"<color=green>[C_AudioManager]</color> Initialized with {musicDict.Count} music and {sfxDict.Count} SFX clips.");
             });
-
-            // 创建持久化 GameObject 和协程 Runner
-            audioRoot = new GameObject("C_MusicManager_Audio");
-            Object.DontDestroyOnLoad(audioRoot);
-
-            runner = audioRoot.AddComponent<AudioRunner>();
-
-            // 添加并配置 AudioSource
-            musicSource = audioRoot.AddComponent<AudioSource>();
-            musicSource.loop = true;
-            sfxSource = audioRoot.AddComponent<AudioSource>();
-
-            // 构建音频字典
-            musicDict = new Dictionary<string, AudioClip>();
-            foreach (var info in audioConfig.musicInfos)
-            {
-                if (info.clip != null && !musicDict.ContainsKey(info.key))
-                    musicDict.Add(info.key, info.clip);
-            }
-
-            sfxDict = new Dictionary<string, AudioClip>();
-            foreach (var info in audioConfig.sfxInfos)
-            {
-                if (info.clip != null && !sfxDict.ContainsKey(info.key))
-                    sfxDict.Add(info.key, info.clip);
-            }
-
-            Debug.Log($"[C_MusicManager] Initialized with {musicDict.Count} music and {sfxDict.Count} SFX clips.");
+            Debug.Log("<color=green>[C_AudioManager]</color> Initialized.");
         }
 
         public override void Shutdown()
@@ -73,7 +80,7 @@ namespace CFramework.Managers
             sfxSource.Stop();
 
             Object.Destroy(audioRoot);
-            Debug.Log("[C_MusicManager] Shutdown complete.");
+            Debug.Log("<color=green>[C_AudioManager]</color> Shutdown complete.");
         }
 
         /// <summary>
@@ -83,7 +90,7 @@ namespace CFramework.Managers
         {
             if (!musicDict.TryGetValue(key, out var clip))
             {
-                Debug.LogWarning($"[C_MusicManager] BGM key not found: {key}");
+                Debug.LogWarning($"<color=green>[C_AudioManager]</color> BGM key not found: {key}");
                 return;
             }
 
@@ -108,7 +115,7 @@ namespace CFramework.Managers
         {
             if (!sfxDict.TryGetValue(key, out var clip))
             {
-                Debug.LogWarning($"[C_MusicManager] SFX key not found: {key}");
+                Debug.LogWarning($"<color=green>[C_AudioManager]</color> SFX key not found: {key}");
                 return;
             }
             sfxSource.PlayOneShot(clip, sfxVolume * volumeScale);

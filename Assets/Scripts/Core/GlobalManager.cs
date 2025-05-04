@@ -46,35 +46,43 @@ namespace CFramework.Core
 
         private void InitializeFramework()
         {
-            Debug.Log("[GameEntry] Initializing Framework...");
+            Debug.Log("<color=orange>[GlobalManager]</color> Initializing Framework...");
 
             FrameworkBootstrap.Initialize();
 
-            Debug.Log("[GameEntry] Framework Initialized.");
+            Debug.Log("<color=orange>[GlobalManager]</color> Framework Initialized.");
         }
 
         // 新增方法：区分正常模式和调试模式启动流程
         private void LaunchNormalMode()
         {
-            Debug.Log("[GameEntry] Starting Normal Mode...");
+            Debug.Log("<color=orange>[GlobalManager]</color> Starting Normal Mode...");
             // TODO: 从正规初始场景开始加载
             // TODO: 配置必要的游戏内容
             // TODO: 播放Logo等开屏动画
             InitializeFramework();
+            Debug.Log("<color=orange>[GlobalManager]</color> Normal Mode Initialized.");
         }
 
         private void LaunchDebugMode()
         {
-            Debug.Log("[GameEntry] Starting Debug Mode...");
+            Debug.Log("<color=orange>[GlobalManager]</color> Starting Debug Mode...");
             // TODO: 可选配置
             // TODO: 跳过Logo等开屏动画，直接进入游戏逻辑
             InitializeFramework();
+            Debug.Log("<color=orange>[GlobalManager]</color> Debug Mode Initialized.");
+
+
+            C_SceneManager.Instance.LoadSceneAsync<DemoScene>("DemoScene", () =>
+            {
+                Debug.Log("<color=orange>[GlobalManager]</color> Demo Scene Loaded.");
+            });
         }
 
         private void OnApplicationQuit()
         {
             OnApplicationQuitEvent?.Invoke();
-            Debug.Log("[GameEntry] Application quitting, shutting down framework.");
+            Debug.Log("<color=orange>[GlobalManager]</color> Application quitting, shutting down framework.");
             FrameworkBootstrap.Shutdown();
         }
     }
